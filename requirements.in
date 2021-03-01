@@ -1,0 +1,5 @@
+invoke
+pip-tools
+prospector
+pytest
+ipython<=7.16.1
