@@ -21,6 +21,7 @@ import pytest
 import logging
 import random
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import asyncio
 
 
 def solution(A, R):
@@ -77,7 +78,7 @@ def test_edge_cases(args, expected):
     ([-2000000, 2000000], 1),
 ))
 def test_uniform_large_array_with_timeout(size, iterations):
-    waiting_for_result_timeout_seconds = 1
+    waiting_for_result_timeout_seconds = 5
 
     def create_uniform_array(size):
         arr = [x for x in range(*size)]
@@ -85,11 +86,14 @@ def test_uniform_large_array_with_timeout(size, iterations):
         idx = arr.index(value)
         return arr, value, idx
 
-    with ThreadPoolExecutor() as executor:
+    async def block_until_task_finished():
         A, R, expected = create_uniform_array(size)
-        futures = {executor.submit(solution, A, R) for _ in range(iterations)}
-        for f in futures:
-            assert expected == f.result(timeout=waiting_for_result_timeout_seconds)
+        f = loop.run_in_executor(None, solution, A, R)
+        assert expected == await asyncio.wait_for(f, timeout=waiting_for_result_timeout_seconds)
+
+    loop = asyncio.get_event_loop()
+    futures = [block_until_task_finished() for _ in range(iterations)]
+    loop.run_until_complete(asyncio.gather(*futures))
 
 
 if __name__ == "__main__":
