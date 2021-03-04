@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 import asyncio
 from packages.binarytrees.binarytrees import solution
 from .testlib import BoundedArray
+import cProfile
 
 
 @pytest.mark.parametrize("args,expected", (
@@ -39,6 +40,13 @@ def test_edge_cases(args, expected):
     assert expected == solution(*args)
 
 
+def create_uniform_array(size):
+    arr = BoundedArray(*size)
+    value = random.randint(size[0], size[1]-1)
+    idx = arr.index(value)
+    return arr, value, idx
+
+
 @pytest.mark.parametrize("size,iterations", (
     ([0, 10], 1),
     ([0, 100], 100),
@@ -50,12 +58,6 @@ def test_edge_cases(args, expected):
 def test_uniform_large_array_with_timeout(size, iterations):
     waiting_for_result_timeout_seconds = 5
 
-    def create_uniform_array(size):
-        arr = BoundedArray(*size)
-        value = random.randint(size[0], size[1]-1)
-        idx = arr.index(value)
-        return arr, value, idx
-
     async def block_until_task_finished():
         A, R, expected = create_uniform_array(size)
         f = loop.run_in_executor(None, solution, A, R)
@@ -64,3 +66,32 @@ def test_uniform_large_array_with_timeout(size, iterations):
     loop = asyncio.get_event_loop()
     futures = [block_until_task_finished() for _ in range(iterations)]
     loop.run_until_complete(asyncio.gather(*futures))
+
+
+def get_profile_stats(size):
+    profiles = []
+
+    def create_list(size):
+        return [v for v in range(*size)]
+
+    def iterate_array(arr):
+        for idx in range(len(arr)):
+            arr[idx]
+
+    R = random.randint(size[0], size[1]-1)
+    idx = R - size[0]
+
+    with cProfile.Profile() as pr:
+        A = create_list(size)
+        assert idx == solution(A, R)
+    profiles.append(pr)
+
+    def create_bounded_array(size):
+        return BoundedArray(*size)
+
+    with cProfile.Profile() as pr:
+        A = create_bounded_array(size)
+        assert idx == solution(A, R)
+
+    profiles.append(pr)
+    return profiles

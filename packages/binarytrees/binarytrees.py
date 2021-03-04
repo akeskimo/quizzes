@@ -20,16 +20,17 @@ import sys
 
 def solution(A, R):
     left = 0
-    right = len(A)
-    while left < right:
+    right = len(A) - 1
+    while left <= right:
         middle = (left + right) // 2
         if A[middle] < R:
+            middle += 1
             left = middle
-            right -= 1
-        else:
+        elif A[middle] > R:
+            middle -= 1
             right = middle
-        if A[right] == R:
-            return right
+        else:
+            return middle
     return -1
 
 

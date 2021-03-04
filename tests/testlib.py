@@ -17,10 +17,11 @@ class BoundedArray(MutableSequence):
     def __init__(self, start, end):
         self.start = start
         self.end = end
+        self._len = self.end - self.start
 
     def __getitem__(self, index):
         index = index if index >= 0 else -index
-        if index > self.__len__():
+        if index > self._len:
             raise IndexError(f"index {index} out of range")
         return self.start + index
 
@@ -34,7 +35,7 @@ class BoundedArray(MutableSequence):
         raise NotImplemented
 
     def insert(self, index, value):
-        self.end += index
+        raise NotImplemented
 
     def __str__(self):
         return f"<BoundedArray([{self.start},{self.end}]) {id(self)}>"
