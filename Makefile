@@ -3,7 +3,10 @@ first: cpp
 cpp:
 	(cd cpp && make)
 
-pytest:
+pylint:
+	prospector python/
+
+pytest: pylint
 	pytest
 
 cpptest: cpp
@@ -11,4 +14,4 @@ cpptest: cpp
 
 test: pytest cpptest
 
-.PHONY: cpp test cpptest pytest
+.PHONY: cpp test cpptest pytest pylint
