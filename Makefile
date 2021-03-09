@@ -6,7 +6,7 @@ cpp:
 pytest:
 	pytest
 
-cpptest:
+cpptest: cpp
 	(cd cpp && make test)
 
 test: pytest cpptest
