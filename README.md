@@ -1,13 +1,20 @@
 # Quizzes
-Programming puzzles and exercises for memory fresh-up with occasional head-banging.
+Programming puzzles with a build-system to try out different
+algorithms and development practices.
 
-## Install
+## Project Tree
 
-```
-pip install -U setuptools pip pip-tools
-pip-sync
-```
+[a relative link](Makefile)
+ The main entrypoint that drives building and testing.
+[a relative link](python/)
+ Python projects with packaging, tests and modules.
+[a relative link](cpp/)
+ C++ demo(n) playground.
+
+## Build
+
+`make`
 
 ## Run Tests
 
-`pytest`
+`make test`
